@@ -212,6 +212,13 @@ class Tetris:
         elif totalCleared == 4:
             self.score += 1200
 
+    # hole checker for heuristic purposes
+    def hasHole(self, row, cell):
+        for i in range(row, self.height):
+            if self.board[i][cell] == 1 and self.board[row][cell] == 0:
+                return True
+        return False
+
     def isRowFull(self, row):
         for i in range(self.width):
             if self.board[row][i] == 0:
