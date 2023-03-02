@@ -380,13 +380,14 @@ def generateRandomPieceOrder(numPieces):
 def generateRandomBoard(height, width, numPieces):
     pieceOrder = generateRandomPieceOrder(numPieces)
     t = Tetris(height, width)
+    t.printBoard()
     for piece in pieceOrder:
         print("start")
         successors = t.findSuccessors(piece)
         if len(successors) == 0:
             break
         t = random.choice(list(successors))
-    t.printBoard()
+        t.printBoard()
     return t.board
 
 def simulate(numPieces, initialState, height, width):
@@ -415,9 +416,9 @@ def simulate(numPieces, initialState, height, width):
     return pieceScores
 for _ in range(20):
     state = generateRandomBoard(14, 10, 5)
-    total = simulate(6, tuple([tuple([0 for i in range(10)]) for j in range(14)]), 14, 10)
+    total = simulate(6, state, 14, 10)
     for i in range(20):
-        result = simulate(6, tuple([tuple([0 for i in range(10)]) for j in range(14)]), 14, 10)
+        result = simulate(6, state, 14, 10)
         for piece in result:
             total[piece] += result[piece]
     for piece in total:
