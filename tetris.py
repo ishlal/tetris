@@ -218,7 +218,44 @@ class Tetris:
             if self.board[i][cell] == 1 and self.board[row][cell] == 0:
                 return True
         return False
+    
+    # Ethan's silly hole heuristic
+    # 1
+    # 0
+    # is a 1 point hole
+    # 1
+    # 0 
+    # 0
+    # is a 2 point hole
+    # 1
+    # 1
+    # 0
+    # is also a 2 point hole
+    def holeHeuristicScore(self):
+        # check each column
+        score = 0
+        for i in range(self.width):
+            # count how many 0s are at the top of the column and 
+            # how many 1s are at the bottom of the column
+            # everything else is part of a hole
+            numZeros = 0
+            for j in range(self.height):
+                if self.board[j][i] == 0:
+                    numZeros += 1
+                else:
+                    break
+            numOnes = 0
+            for j in range(self.height-1, -1, -1):
+                if self.board[j][i] == 1:
+                    numOnes += 1
+                else:
+                    break
+            score += height - (numZeros + numOnes)
+        return score
+                
+                
 
+    #used to check to see if a row should be cleared
     def isRowFull(self, row):
         for i in range(self.width):
             if self.board[row][i] == 0:
@@ -278,7 +315,7 @@ class Tetris:
         self.board = tuple(tuple(row) for row in listBoard)
 
     def findSuccessors (self, piece):
-        # TODO: return a list of all possible successors of the board given a piece
+        # find successors also uses heuristic to choose which successor to return
         newBoards = set()
         pieceBoards = []
         if piece == 'I':
@@ -304,16 +341,21 @@ class Tetris:
                 newBoard.slam(pieceBoard)
                 newBoard.updateBoard()
                 r = random.random()
-                if newBoard.isGoodSetup() and r < 0.1:
-                    newBoards.add(newBoard)
+                if r < 0.25:
+                    holescore = newBoard.holeHeuristicScore()
+                    r = random.random()
+                    if holescore == 0:
+                        newBoards.add(newBoard)
+                    elif r < 1/holescore:
+                        newBoards.add(newBoard)
         return newBoards
         
     def isGoodSetup(self):
         # return False if there is a 1 above a 0
-        # for i in range(self.height - 1):
-        #     for j in range(self.width):
-        #         if self.board[i][j] == 1 and self.board[i+1][j] == 0:
-        #             return False
+        for i in range(self.height - 1):
+            for j in range(self.width):
+                if self.board[i][j] == 1 and self.board[i+1][j] == 0:
+                    return False
         return True
 
     def isGameOver(self, pieceBoard):
@@ -339,6 +381,7 @@ def generateRandomBoard(height, width, numPieces):
     pieceOrder = generateRandomPieceOrder(numPieces)
     t = Tetris(height, width)
     for piece in pieceOrder:
+        print("start")
         successors = t.findSuccessors(piece)
         if len(successors) == 0:
             break
