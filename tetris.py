@@ -212,6 +212,21 @@ class Tetris:
         elif totalCleared == 4:
             self.score += 1200
 
+    def getColumnHeight(self, column):
+        for i in range(self.height, 0, -1):
+            if self.board[i][column] == 1:
+                return i
+        return 0
+
+    def getVariance(self):
+        heights = []
+        for i in range(self.width):
+            heights.append(self.getColumnHeight(i))
+        mean = sum(heights) / len(heights)
+        variance = sum((x - mean) ** 2 for x in heights) / len(heights)
+        return variance
+        
+
     # hole checker for heuristic purposes
     def hasHole(self, row, cell):
         for i in range(row, self.height):
