@@ -341,7 +341,7 @@ class Tetris:
                 newBoard.slam(pieceBoard)
                 newBoard.updateBoard()
                 r = random.random()
-                if r < 0.25:
+                if r < 0.5:
                     holescore = newBoard.holeHeuristicScore()
                     r = random.random()
                     if holescore == 0:
@@ -380,14 +380,12 @@ def generateRandomPieceOrder(numPieces):
 def generateRandomBoard(height, width, numPieces):
     pieceOrder = generateRandomPieceOrder(numPieces)
     t = Tetris(height, width)
-    t.printBoard()
     for piece in pieceOrder:
-        print("start")
         successors = t.findSuccessors(piece)
         if len(successors) == 0:
             break
         t = random.choice(list(successors))
-        t.printBoard()
+    t.printBoard()
     return t.board
 
 def simulate(numPieces, initialState, height, width):
@@ -414,15 +412,15 @@ def simulate(numPieces, initialState, height, width):
         pieceScores[piece] = maxScore
         # print("done calculating score for piece: " + piece + "")
     return pieceScores
-for _ in range(20):
+for _ in range(10):
     state = generateRandomBoard(14, 10, 5)
     total = simulate(6, state, 14, 10)
-    for i in range(20):
+    for i in range(10):
         result = simulate(6, state, 14, 10)
         for piece in result:
             total[piece] += result[piece]
     for piece in total:
-        total[piece] /= 21
+        total[piece] /= 11
     print(total)
 #test to make sure slamming works
 # t = Tetris(height, width)
